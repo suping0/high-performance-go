@@ -17,12 +17,18 @@ type Config struct {
 func readConfig() *Config {
 	// read from xxx.json，省略
 	config := Config{}
+	// 结构体的元数据信息(字段等信息)
 	typ := reflect.TypeOf(config)
+	// 返回指针所指向结构体，实际所存储的值
 	value := reflect.Indirect(reflect.ValueOf(&config))
+	// NumField() 返回struct的字段数量
 	for i := 0; i < typ.NumField(); i++ {
+		// 结构体字段
 		f := typ.Field(i)
+		// 获取字段的tag
 		if v, ok := f.Tag.Lookup("json"); ok {
 			key := fmt.Sprintf("CONFIG_%s", strings.ReplaceAll(strings.ToUpper(v), "-", "_"))
+			// 从环境变量中读取值
 			if env, exist := os.LookupEnv(key); exist {
 				value.FieldByName(f.Name).Set(reflect.ValueOf(env))
 			}
